@@ -1,26 +1,105 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #16130f;
+  --ink-soft: #221d16;
+  --ink-line: #37302a;
+  --paper: #f6f1e7;
+  --paper-dim: #e9e2d2;
+  --paper-line: #d8cfba;
+  --ink-on-paper: #201b14;
+  --faded-on-paper: #6f6551;
+  --gold: #d9a441;
+  --ember: #d4622a;
+  --heat-4: #c8451f;
+  --heat-5: #b32d2d;
+  --ok: #4c7a4c;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-line: var(--ink-line);
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-paper-line: var(--paper-line);
+  --color-ink-on-paper: var(--ink-on-paper);
+  --color-faded: var(--faded-on-paper);
+  --color-gold: var(--gold);
+  --color-ember: var(--ember);
+  --color-heat-4: var(--heat-4);
+  --color-heat-5: var(--heat-5);
+  --color-ok: var(--ok);
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-plex-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+/* Three cards cascade in with a ~100ms stagger. */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card-in {
+  animation: card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Card pulses gently while its escalation is in flight. */
+@keyframes escalating-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(217, 164, 65, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(217, 164, 65, 0.35);
+  }
+}
+
+.escalating-pulse {
+  animation: escalating-pulse 1.4s ease-in-out infinite;
+}
+
+/* Rotating status lines in the LoadingTheater. */
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.line-in {
+  animation: line-in 0.3s ease-out both;
+}
+
+/* Skeleton shimmer. */
+@keyframes shimmer {
+  0% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.45;
+  }
+}
+
+.shimmer {
+  animation: shimmer 1.6s ease-in-out infinite;
 }
