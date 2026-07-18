@@ -1,4 +1,4 @@
-import { ProviderError, callStructuredWithRetry } from "@/lib/anthropic";
+import { ProviderError, callStructuredWithRetry } from "@/lib/gemini";
 import {
   batchSystemPrompt,
   generateUserTurn,

@@ -12,7 +12,7 @@ the evidence displayed on the card.
 
 ```bash
 npm install
-cp .env.example .env.local   # then paste your Anthropic API key
+cp .env.example .env.local   # then paste your Gemini API key (free at aistudio.google.com)
 npm run dev                  # http://localhost:3000
 npm test                     # validation-layer unit tests
 ```
@@ -100,7 +100,10 @@ provider detail is logged server-side only. Nothing blanks the app.
 
 ## Stack
 
-Next.js (App Router) + TypeScript + Tailwind on Vercel. Claude Haiku 4.5 via
-the official Anthropic SDK with native structured outputs
-(`output_config.format` + zod), so every response is schema-valid JSON —
-no scraping. The model is one line in `lib/anthropic.ts`.
+Next.js (App Router) + TypeScript + Tailwind on Vercel. Gemini 3.5 Flash via
+the official `@google/genai` SDK with native structured outputs
+(`responseJsonSchema` + zod), so every response is schema-valid JSON — no
+scraping. The model is one line in `lib/gemini.ts`. (Model chosen after a
+cross-provider comparison on humor quality, constraint compliance, and
+latency; the provider module's narrow interface — one `callStructured`
+function — keeps a future swap to a one-file change.)

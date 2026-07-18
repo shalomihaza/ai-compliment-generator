@@ -1,4 +1,4 @@
-import { callStructuredWithRetry } from "./anthropic";
+import { callStructuredWithRetry } from "./gemini";
 import { ComplimentSchema, type ComplimentOutput, type Message } from "./types";
 import { MAX_WORDS, validateCompliment, type Violation } from "./validation";
 

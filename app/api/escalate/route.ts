@@ -1,4 +1,4 @@
-import { ProviderError } from "@/lib/anthropic";
+import { ProviderError } from "@/lib/gemini";
 import { MAX_LEVEL, ladderInstruction } from "@/lib/escalation";
 import { singleRegisterSystemPrompt, singleUserTurn } from "@/lib/prompts";
 import { getRegister } from "@/lib/registers";
