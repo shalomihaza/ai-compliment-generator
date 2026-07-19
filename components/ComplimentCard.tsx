@@ -8,20 +8,18 @@ import { escalateButtonLabel, MAX_LEVEL } from "@/lib/escalation";
 import type { CardData } from "./ComplimentApp";
 
 const ESCALATING_LINES = [
-  "Summoning extra drama… 🎭",
-  "Cranking the hype dial… 🎚️",
-  "Alerting the confetti department… 🎉",
-  "Amplifying beyond safe limits… ⚡",
+  "Summoning drama… 🎭",
+  "Cranking the dial… 🎚️",
+  "More confetti… 🎉",
+  "Amplifying… ⚡",
 ];
 
 export function ComplimentCard({
   card,
-  rulesExpanded,
   onEscalate,
   onToast,
 }: {
   card: Extract<CardData, { status: "ready" | "escalating" | "escalate_failed" }>;
-  rulesExpanded: boolean;
   onEscalate: () => void;
   onToast: (message: string) => void;
 }) {
@@ -65,14 +63,14 @@ export function ComplimentCard({
         {card.current.text}
       </p>
 
-      <RuleChecklist compliment={card.current} expanded={rulesExpanded} />
+      <RuleChecklist compliment={card.current} />
 
       <footer className="flex items-center gap-2 mt-auto">
         <button
           type="button"
           onClick={escalate}
           disabled={escalating || retired}
-          className={`flex-1 text-sm font-bold px-4 py-3 rounded-xl transition ${
+          className={`flex-1 min-w-0 truncate text-sm font-bold px-4 py-3 rounded-xl transition ${
             retired
               ? "bg-surface-soft text-text-faint ring-1 ring-line cursor-not-allowed"
               : "grad-primary text-white shadow-md shadow-violet/25 cursor-pointer hover:shadow-lg hover:shadow-violet/30 active:scale-95 disabled:opacity-70"
