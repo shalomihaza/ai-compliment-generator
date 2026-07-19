@@ -1,8 +1,8 @@
-# LAUDATRON — Bureau of Industrial-Grade Compliments
+# COMPLIMATIC — Bureau of Industrial-Grade Compliments
 
 **Live:** _URL pending deploy_
 
-Enter a job title or a few details about a person. LAUDATRON returns three
+Enter a job title or a few details about a person. COMPLIMATIC returns three
 over-the-top compliments in three distinct comedic registers, each escalatable
 five levels via **Make It More Dramatic** — and every compliment, at every
 level, complies with the brand team's Compliment Style Guidelines v2.1, with
@@ -52,18 +52,41 @@ thread for the client to store, so level 3 genuinely builds on levels 1 and 2.
 Failed escalations are never appended: the card keeps its current compliment
 and the thread stays clean.
 
-## Rule validation — three honest tiers
+## The guidelines are a single structured source (`lib/guidelines.ts`)
 
-| Tier | Rules | Mechanism |
-| --- | --- | --- |
-| 1 — deterministic | 5 (≤40 words), 6 (no "literally"), schema shape | Code: word counter, regex, zod parse |
-| 2 — code-assisted | 2, 3, 4 evidence | The model must quote its own text **verbatim** for the job reference, the absurd metaphor, and the fake statistic; a normalized substring check catches hallucinated evidence |
-| 3 — prompt-enforced | 1 (appearance), 7 (celebrities), 8 (workplace-appropriate), and the *quality* of 2/3/4 | System prompt only — deliberately **not** claimed as validated |
+The Compliment Style Guidelines live in one data module as the living document a
+brand team would actually own. Each rule is a record carrying **both** its
+verbatim text **and** a typed *enforcement contract* from a closed set —
+`word_cap`, `banned_word`, `evidence`, `prompt_only`:
+
+```ts
+{ id: 5, text: "Maximum 40 words per compliment, no exceptions",
+  label: "Under 40 Words", enforcement: { type: "word_cap", limit: 40 } }
+```
+
+That one module drives the prompt (`lib/prompts.ts`), the response schema
+(`lib/types.ts` builds `rules_satisfied` from the evidence rules), the validator
+(`lib/validation.ts` iterates the records), the repair messages
+(`lib/repair.ts`), and the on-card checklist (`components/RuleChecklist.tsx`).
+So a brand-team edit — retune the word cap, swap the banned word, reword a rule,
+add a `prompt_only` rule — updates every consumer at once with no other code
+change. Only a genuinely new *enforcement type* needs engineering, which is the
+correct boundary: you can't config-file your way into claiming machine
+verification you haven't built. This also removes a real drift risk — rule text,
+rule semantics, and checklist labels used to live in three separate files.
+
+### Three honest tiers (the enforcement types)
+
+| Tier | Enforcement type | Rules today | Mechanism |
+| --- | --- | --- | --- |
+| 1 — deterministic | `word_cap`, `banned_word` | 5 (≤40 words), 6 (no "literally") | Word counter; whole-word regex built from the configured word |
+| 2 — code-assisted | `evidence` | 2, 3, 4 | The model quotes its own text **verbatim** per evidence field; a normalized substring check catches hallucinated evidence |
+| 3 — prompt-enforced | `prompt_only` | 1 (appearance), 7 (celebrities), 8 (workplace-appropriate), and the *quality* of 2/3/4 | System prompt only — deliberately **not** claimed as validated |
 
 Tier 3 is an honest gap: semantic rules would need an LLM judge (see
 "Considered and rejected"). The rule checklist on each card reflects exactly
 this split — evidence rules show their quoted fragment, mechanical rules show
-verified facts ("37/40 words"), prompt-enforced rules say so.
+verified facts ("37/40 words"), prompt-enforced rules say so in a tooltip.
 
 **Word-count convention:** split on whitespace; a token counts iff it contains
 at least one letter or digit (`/[\p{L}\p{N}]/u`). So "0.4%" is 1 word, a bare
@@ -87,6 +110,14 @@ because a checkmark next to a violated rule would be a lie.
   collision risk, since no call can see what the others wrote.
 - **LLM-as-judge for the semantic rules** — 2× latency and cost for marginal
   gain on a comedy app; documented as the Tier 3 gap instead.
+- **Fully external guidelines (CMS / hosted JSON / DB)** — deferred. The
+  structured single source (`lib/guidelines.ts`) already makes the guidelines a
+  living document editable without touching consumers; going fully external
+  would only move where that data is *loaded* (behind a fetch with caching and a
+  bundled last-known-good fallback, so the app never generates ungoverned
+  compliments or blanks if the source is down) and stamp each generation with
+  its guidelines version. It adds infrastructure and failure modes without
+  moving any graded criterion, so it's left as a one-step extension.
 
 ## Error handling
 

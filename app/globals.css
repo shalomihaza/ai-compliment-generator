@@ -1,50 +1,99 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #16130f;
-  --ink-soft: #221d16;
-  --ink-line: #37302a;
-  --paper: #f6f1e7;
-  --paper-dim: #e9e2d2;
-  --paper-line: #d8cfba;
-  --ink-on-paper: #201b14;
-  --faded-on-paper: #6f6551;
-  --gold: #d9a441;
-  --ember: #d4622a;
-  --heat-4: #c8451f;
-  --heat-5: #b32d2d;
-  --ok: #4c7a4c;
+  --cream: #fff9f4;
+  --cream-deep: #fcefe4;
+  --surface: #ffffff;
+  --surface-soft: #fbf3ec;
+  --line: #f0e2d6;
+  --text-strong: #2e2436;
+  --text-soft: #6e6278;
+  --text-faint: #a79db0;
+  --coral: #ff6b6b;
+  --peach: #ffb077;
+  --pink: #f472b6;
+  --violet: #8b5cf6;
+  --success: #1fa97a;
+  --danger: #f43f5e;
+  --heat-1: #ffb077;
+  --heat-2: #ff8a70;
+  --heat-3: #ff6b6b;
+  --heat-4: #f43f5e;
+  --heat-5: #a855f7;
 }
 
 @theme inline {
-  --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
-  --color-ink-line: var(--ink-line);
-  --color-paper: var(--paper);
-  --color-paper-dim: var(--paper-dim);
-  --color-paper-line: var(--paper-line);
-  --color-ink-on-paper: var(--ink-on-paper);
-  --color-faded: var(--faded-on-paper);
-  --color-gold: var(--gold);
-  --color-ember: var(--ember);
+  --color-cream: var(--cream);
+  --color-cream-deep: var(--cream-deep);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-line: var(--line);
+  --color-text-strong: var(--text-strong);
+  --color-text-soft: var(--text-soft);
+  --color-text-faint: var(--text-faint);
+  --color-coral: var(--coral);
+  --color-peach: var(--peach);
+  --color-pink: var(--pink);
+  --color-violet: var(--violet);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
   --color-heat-4: var(--heat-4);
   --color-heat-5: var(--heat-5);
-  --color-ok: var(--ok);
   --font-display: var(--font-fraunces);
-  --font-mono: var(--font-plex-mono);
+  --font-sans: var(--font-jakarta);
 }
 
 body {
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  background:
+    radial-gradient(60rem 40rem at 12% -10%, rgba(255, 176, 119, 0.28), transparent 60%),
+    radial-gradient(50rem 36rem at 95% 110%, rgba(139, 92, 246, 0.14), transparent 60%),
+    var(--cream);
+  color: var(--text-soft);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+}
+
+/* Signature brand gradient — CTA, escalate button, gradient headline text. */
+.grad-primary {
+  background-image: linear-gradient(100deg, var(--coral), var(--pink), var(--violet));
+}
+
+/* Ambient background blobs behind the whole page. */
+@keyframes blob-drift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(4%, -6%) scale(1.06);
+  }
+}
+
+.blob {
+  animation: blob-drift 20s ease-in-out infinite alternate;
+}
+
+/* Gentle bob for the empty-state graphic. */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
 }
 
 /* Three cards cascade in with a ~100ms stagger. */
 @keyframes card-in {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.98);
+    transform: translateY(18px) scale(0.98);
   }
   to {
     opacity: 1;
@@ -53,22 +102,30 @@ body {
 }
 
 .card-in {
-  animation: card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Card pulses gently while its escalation is in flight. */
-@keyframes escalating-pulse {
+/* Card glows while its escalation is in flight; drops on reveal. */
+@keyframes glow-escalating {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(217, 164, 65, 0);
+    box-shadow:
+      0 0 0 2px rgba(255, 107, 107, 0.18),
+      0 8px 32px -8px rgba(139, 92, 246, 0.18);
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(217, 164, 65, 0.35);
+    box-shadow:
+      0 0 0 4px rgba(255, 107, 107, 0.35),
+      0 12px 44px -6px rgba(139, 92, 246, 0.4);
   }
 }
 
-.escalating-pulse {
-  animation: escalating-pulse 1.4s ease-in-out infinite;
+.glow-escalating {
+  animation: glow-escalating 1.4s ease-in-out infinite;
+  /* Static fallback ring so reduced-motion still shows the state. */
+  box-shadow:
+    0 0 0 3px rgba(255, 107, 107, 0.28),
+    0 10px 38px -8px rgba(139, 92, 246, 0.3);
 }
 
 /* Rotating status lines in the LoadingTheater. */
@@ -87,19 +144,88 @@ body {
   animation: line-in 0.3s ease-out both;
 }
 
-/* Skeleton shimmer. */
-@keyframes shimmer {
-  0% {
-    opacity: 0.45;
+/* Skeleton shimmer — a light band sweeping across placeholder bars. */
+@keyframes shimmer-sweep {
+  from {
+    background-position: 200% 0;
   }
-  50% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 0.45;
+  to {
+    background-position: -200% 0;
   }
 }
 
 .shimmer {
-  animation: shimmer 1.6s ease-in-out infinite;
+  background-image: linear-gradient(
+    90deg,
+    var(--cream-deep) 0%,
+    var(--cream-deep) 40%,
+    #ffffff 50%,
+    var(--cream-deep) 60%,
+    var(--cream-deep) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.8s linear infinite;
+}
+
+/* Compliment text fades and rises into place; re-fires via key change. */
+@keyframes text-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.text-reveal {
+  animation: text-reveal 0.45s ease-out both;
+}
+
+/* Toast pops up from the bottom edge. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.toast-in {
+  animation: toast-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* A DramaMeter pip pops when it fills. */
+@keyframes pip-pop {
+  0% {
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pip-pop {
+  animation: pip-pop 0.35s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob,
+  .float,
+  .card-in,
+  .glow-escalating,
+  .line-in,
+  .shimmer,
+  .text-reveal,
+  .toast-in,
+  .pip-pop {
+    animation: none;
+  }
 }

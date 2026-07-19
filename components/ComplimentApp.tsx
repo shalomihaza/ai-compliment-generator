@@ -3,7 +3,10 @@
 import { useReducer } from "react";
 import { ComplimentForm } from "./ComplimentForm";
 import { ComplimentGrid } from "./ComplimentGrid";
+import { EmptyState } from "./EmptyState";
 import { LoadingTheater } from "./LoadingTheater";
+import { Toast } from "./Toast";
+import { useToast } from "@/hooks/useToast";
 import type { RegisterInfo } from "@/lib/registers";
 import type {
   ApiError,
@@ -195,6 +198,7 @@ function asApiError(error: unknown): ApiError {
 
 export function ComplimentApp() {
   const [state, dispatch] = useReducer(reducer, { phase: "idle" });
+  const { toast, showToast } = useToast();
 
   async function generate(details: string) {
     dispatch({ type: "GENERATE_START", details });
@@ -264,6 +268,8 @@ export function ComplimentApp() {
         }
       />
 
+      {state.phase === "idle" && <EmptyState />}
+
       {state.phase === "generating" && <LoadingTheater />}
 
       {state.phase === "ready" && (
@@ -271,26 +277,30 @@ export function ComplimentApp() {
           cards={state.cards}
           onEscalate={escalate}
           onRetrySlot={retrySlot}
+          onToast={showToast}
         />
       )}
 
       {state.phase === "generate_failed" && (
-        <div className="mt-10 border border-ink-line bg-ink-soft rounded-lg p-8 text-center">
-          <p className="text-gold text-sm uppercase tracking-widest mb-3">
-            Bureau notice
+        <div className="mt-12 max-w-lg mx-auto bg-white/80 backdrop-blur-xl ring-1 ring-line rounded-2xl p-8 text-center shadow-lg shadow-coral/5">
+          <p aria-hidden className="text-4xl mb-4">
+            🎭
           </p>
-          <p className="text-paper text-lg font-display italic mb-6">
-            {state.error.message}
+          <p className="font-display text-xl text-text-strong mb-2 text-balance">
+            The compliment engine got stage fright. Give it another chance.
           </p>
+          <p className="text-sm text-text-soft mb-6">{state.error.message}</p>
           <button
             type="button"
             onClick={() => generate(state.details)}
-            className="border border-gold text-gold px-6 py-2 rounded-sm uppercase tracking-widest text-sm hover:bg-gold hover:text-ink transition-colors"
+            className="grad-primary text-white font-bold text-sm px-6 py-3 rounded-xl shadow-md shadow-coral/25 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition"
           >
             Try again
           </button>
         </div>
       )}
+
+      <Toast toast={toast} />
     </div>
   );
 }

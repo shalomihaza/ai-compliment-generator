@@ -35,15 +35,19 @@ export function ladderInstruction(level: number): string {
   return instruction;
 }
 
-/** Button label shown at a given current level (i.e. before the next press). */
+/**
+ * Button caption shown at a given current level (before the next press). Kept
+ * short so the button never wraps past one line — it must stay the same height
+ * as the Copy button beside it. The last entry is the retired/disabled state.
+ */
 export function escalateButtonLabel(level: number): string {
   const labels = [
-    "Make it more dramatic",
-    "More dramatic",
-    "MORE.",
-    "FURTHER",
-    "UNLEASH FINAL FORM",
-    "MAXIMUM DRAMA ACHIEVED",
+    "Make it dramatic",
+    "More drama",
+    "Even more",
+    "Too far?",
+    "Final form",
+    "Maxed out",
   ];
   return labels[Math.min(level, MAX_LEVEL)];
 }

@@ -52,7 +52,7 @@ export const REGISTERS: readonly RegisterInfo[] = [
   },
   {
     id: "conspiracy_correct",
-    name: "Conspiracy Theorist (Correct)",
+    name: "Conspiracy Theorist",
     emoji: "🧵",
     direction:
       "Connecting the dots — every claim is a compliment, the conspiracy is that this person is excellent. Urgent, paranoid, right.",

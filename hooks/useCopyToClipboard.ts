@@ -21,14 +21,18 @@ export function useCopyToClipboard(resetAfterMs = 2000) {
 
   const copy = useCallback(
     async (text: string) => {
+      let ok: boolean;
       try {
         await navigator.clipboard.writeText(text);
         setState("copied");
+        ok = true;
       } catch {
         setState("failed");
+        ok = false;
       }
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(() => setState("idle"), resetAfterMs);
+      return ok;
     },
     [resetAfterMs],
   );

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, IBM_Plex_Mono } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -8,16 +8,16 @@ const fraunces = Fraunces({
   style: ["normal", "italic"],
 });
 
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "LAUDATRON — Industrial-Grade Compliments",
+  title: "COMPLIMATIC — The Internet's Most Dramatic Compliment Generator",
   description:
-    "Enter a job title or a few details. Receive three brand-compliant, over-the-top compliments. Escalate at your own risk.",
+    "Enter a job title or a few details and receive three hilariously over-the-top compliments. Escalate the drama at your own risk.",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${jakarta.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
