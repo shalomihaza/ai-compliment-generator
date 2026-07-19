@@ -14,7 +14,7 @@ export function RejectedCard({
   onRetry: () => void;
 }) {
   return (
-    <article className="border-2 border-dashed border-line bg-white/50 rounded-2xl p-6 flex flex-col gap-4 min-h-60">
+    <article className="h-full border-2 border-dashed border-line bg-white/50 rounded-2xl p-6 flex flex-col gap-4 min-h-60">
       <span className="inline-flex self-start items-center gap-1.5 bg-surface-soft ring-1 ring-line rounded-full px-3 py-1 text-xs font-semibold text-text-soft">
         <span aria-hidden>{card.register.emoji}</span>
         {card.register.name}

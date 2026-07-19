@@ -1,16 +1,20 @@
 "use client";
 
-import { GUIDELINES, type Guideline } from "@/lib/guidelines";
+import { GUIDELINES, evidenceGuidelines, type Guideline } from "@/lib/guidelines";
 import { countWords } from "@/lib/validation";
 import type { DisplayCompliment } from "@/lib/types";
 
 /**
- * One consistent checklist of every brand rule, each with a green ✓ (a
- * deliberate visual-consistency call). Every row is derived from
- * `lib/guidelines.ts`: quote-verified rules show their verbatim proof inline,
- * mechanical rules show the verified fact, and the verified/prompt-enforced
- * distinction lives in each row's tooltip. Verified rows come first so the
- * real machine checks lead.
+ * The on-card brand-rule display, driven entirely by `lib/guidelines.ts`.
+ *
+ * Expanded (default): every rule as a green-✓ row (a deliberate
+ * visual-consistency call). Quote-verified rules show their verbatim proof
+ * inline, mechanical rules show the verified fact, and the verified vs
+ * prompt-enforced distinction lives in each row's tooltip. Verified rows lead.
+ *
+ * Collapsed (global toggle): a compact "Brand compliant" stamp plus just the
+ * evidence quotes — enough to signal compliance and show the proof when the
+ * user wants a cleaner card to read or share.
  */
 
 const PROMPT_TITLE = "Requested in the prompt — not machine-verified";
@@ -49,7 +53,36 @@ const ORDERED = [...GUIDELINES].sort(
   (a, b) => Number(isVerified(b)) - Number(isVerified(a)),
 );
 
-export function RuleChecklist({ compliment }: { compliment: DisplayCompliment }) {
+export function RuleChecklist({
+  compliment,
+  expanded,
+}: {
+  compliment: DisplayCompliment;
+  expanded: boolean;
+}) {
+  if (!expanded) {
+    return (
+      <div className="border-t border-line pt-3 flex flex-col gap-1.5">
+        <p className="text-[11px] font-semibold text-success">
+          <span aria-hidden>✓</span> Brand compliant
+        </p>
+        {evidenceGuidelines.map((guideline) => {
+          const quote = compliment.rulesSatisfied[guideline.enforcement.field];
+          if (!quote) return null;
+          return (
+            <p
+              key={guideline.id}
+              title={guideline.text}
+              className="font-display text-sm text-text-strong"
+            >
+              “{quote}”
+            </p>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
     <ul className="border-t border-line pt-3 flex flex-col gap-1.5">
       {ORDERED.map((guideline) => {

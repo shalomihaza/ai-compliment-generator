@@ -16,10 +16,12 @@ const ESCALATING_LINES = [
 
 export function ComplimentCard({
   card,
+  rulesExpanded,
   onEscalate,
   onToast,
 }: {
   card: Extract<CardData, { status: "ready" | "escalating" | "escalate_failed" }>;
+  rulesExpanded: boolean;
   onEscalate: () => void;
   onToast: (message: string) => void;
 }) {
@@ -44,7 +46,7 @@ export function ComplimentCard({
 
   return (
     <article
-      className={`relative bg-white/80 backdrop-blur-xl rounded-2xl ring-1 ring-line p-6 flex flex-col gap-4 shadow-[0_8px_30px_-12px_rgb(255_107_107/0.15)] hover:-translate-y-1 hover:shadow-xl hover:shadow-coral/10 transition duration-300 ${
+      className={`relative h-full bg-white/80 backdrop-blur-xl rounded-2xl ring-1 ring-line p-6 flex flex-col gap-4 shadow-[0_8px_30px_-12px_rgb(255_107_107/0.15)] hover:-translate-y-1 hover:shadow-xl hover:shadow-coral/10 transition duration-300 ${
         escalating ? "glow-escalating" : ""
       }`}
     >
@@ -63,7 +65,7 @@ export function ComplimentCard({
         {card.current.text}
       </p>
 
-      <RuleChecklist compliment={card.current} />
+      <RuleChecklist compliment={card.current} expanded={rulesExpanded} />
 
       <footer className="flex items-center gap-2 mt-auto">
         <button
