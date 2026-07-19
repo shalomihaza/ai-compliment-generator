@@ -5,21 +5,15 @@ import { useRotatingPlaceholder } from "@/hooks/useRotatingPlaceholder";
 
 const MAX_LENGTH = 300;
 
-const PLACEHOLDER_EXAMPLES = [
-  "Product Manager",
-  "Software Engineer",
-  "Teacher",
-  "Coffee Barista",
-  "Dentist",
-];
-
-const SUGGESTION_CHIPS = [
-  "Product Manager",
-  "Software Engineer",
-  "Teacher",
-  "Coffee Barista",
-  "Dentist",
-  "Nurse",
+// Name + job + one telling detail — the input format that gets the best
+// compliments, doubling as both rotating placeholders and suggestion chips.
+const PERSON_EXAMPLES = [
+  "Sarah, accountant, loves hiking",
+  "my coworker Dev, barista, latte-art perfectionist",
+  "Maya, nurse, never loses her cool",
+  "Leo, product manager",
+  "Ms. Rivera, teacher",
+  "Sam, software engineer, refuses to write bugs",
 ];
 
 export function ComplimentForm({
@@ -34,7 +28,7 @@ export function ComplimentForm({
   const [details, setDetails] = useState("");
   const [touched, setTouched] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const placeholder = useRotatingPlaceholder(PLACEHOLDER_EXAMPLES);
+  const placeholder = useRotatingPlaceholder(PERSON_EXAMPLES);
 
   const trimmed = details.trim();
   const empty = trimmed.length === 0;
@@ -80,7 +74,7 @@ export function ComplimentForm({
       </div>
 
       <div className="flex flex-wrap gap-2 justify-center mt-4">
-        {SUGGESTION_CHIPS.map((chip) => (
+        {PERSON_EXAMPLES.map((chip) => (
           <button
             key={chip}
             type="button"
