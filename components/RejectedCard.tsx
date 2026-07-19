@@ -14,26 +14,29 @@ export function RejectedCard({
   onRetry: () => void;
 }) {
   return (
-    <article className="border border-dashed border-ink-line bg-ink-soft rounded-lg p-5 flex flex-col gap-4 min-h-60">
-      <span className="inline-flex self-start items-center gap-1.5 border border-ink-line rounded-full px-3 py-1 text-xs uppercase tracking-wider text-paper/70">
+    <article className="border-2 border-dashed border-line bg-white/50 rounded-2xl p-6 flex flex-col gap-4 min-h-60">
+      <span className="inline-flex self-start items-center gap-1.5 bg-surface-soft ring-1 ring-line rounded-full px-3 py-1 text-xs font-semibold text-text-soft">
         <span aria-hidden>{card.register.emoji}</span>
         {card.register.name}
       </span>
       <div className="my-auto text-center">
-        <p className="text-ember text-xs uppercase tracking-widest mb-2">
-          Rejected
+        <p aria-hidden className="text-3xl mb-2">
+          🙈
         </p>
-        <p className="font-display italic text-paper/80">
-          This compliment was rejected by the Brand Compliance Bureau.
+        <p className="font-display text-lg text-text-strong">
+          This one flopped.
+        </p>
+        <p className="mt-1 text-sm text-text-soft">
+          The AI got a little too weird — even for us.
         </p>
       </div>
       <button
         type="button"
         onClick={onRetry}
         disabled={card.retrying}
-        className="border border-gold text-gold text-xs uppercase tracking-widest px-4 py-2.5 rounded-sm hover:bg-gold hover:text-ink transition-colors disabled:opacity-60"
+        className="ring-1 ring-coral text-coral text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-coral hover:text-white active:scale-95 transition disabled:opacity-60"
       >
-        {card.retrying ? "Appealing the decision…" : "Appeal the decision"}
+        {card.retrying ? "Summoning a better one…" : "Give it another shot 🔁"}
       </button>
     </article>
   );

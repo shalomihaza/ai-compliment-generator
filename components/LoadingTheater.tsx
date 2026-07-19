@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 
 const STATUS_LINES = [
-  "Consulting the Bureau of Excellence…",
-  "Verifying percentile claims…",
-  "Escalating to the Department of Metaphors…",
-  "Running brand compliance audit…",
-  "Cross-referencing the Registry of Legends…",
-  "Calibrating enthusiasm to unsafe levels…",
+  "Consulting the Council of Hyperbole…",
+  "Measuring Greatness…",
+  "Searching Parallel Universes…",
+  "Bribing the Thesaurus…",
+  "Inflating adjectives to regulation pressure…",
+  "Recruiting a hype committee…",
 ];
 
 function shuffled<T>(items: readonly T[]): T[] {
@@ -42,27 +42,27 @@ export function LoadingTheater() {
   }, [lines.length]);
 
   return (
-    <div className="mt-10" role="status" aria-live="polite">
+    <div className="mt-12" role="status" aria-live="polite">
       <p
         key={lines[index]}
-        className="line-in text-center text-gold text-sm uppercase tracking-widest mb-8"
+        className="line-in text-center text-coral text-sm font-semibold mb-8"
       >
         {lines[index]}
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[0, 1, 2].map((slot) => (
           <div
             key={slot}
-            className="shimmer bg-paper/10 border border-ink-line rounded-lg p-6 h-72"
+            className="card-in bg-white/70 backdrop-blur-xl ring-1 ring-line rounded-2xl p-6 h-72 shadow-lg shadow-coral/5"
             style={{ animationDelay: `${slot * 0.2}s` }}
           >
-            <div className="bg-paper/20 h-6 w-32 rounded-full mb-6" />
+            <div className="shimmer h-6 w-32 rounded-full mb-6" />
             <div className="space-y-3">
-              <div className="bg-paper/20 h-4 w-full rounded" />
-              <div className="bg-paper/20 h-4 w-5/6 rounded" />
-              <div className="bg-paper/20 h-4 w-4/6 rounded" />
+              <div className="shimmer h-4 w-full rounded-full" />
+              <div className="shimmer h-4 w-5/6 rounded-full" />
+              <div className="shimmer h-4 w-4/6 rounded-full" />
             </div>
-            <div className="bg-paper/20 h-3 w-24 rounded mt-10" />
+            <div className="shimmer h-5 w-40 rounded-full mt-10" />
           </div>
         ))}
       </div>

@@ -6,73 +6,106 @@ import { countWords, MAX_WORDS } from "@/lib/validation";
 import type { DisplayCompliment, RulesSatisfied } from "@/lib/types";
 
 /**
- * Collapsed: a "Brand compliant" stamp. Expanded: all 8 rules with how each
- * was satisfied — evidence rules show their verbatim quote, mechanical rules
- * show the verified facts (quietly advertising the real validator), and
- * prompt-enforced rules say so honestly.
+ * Honest badge row. Verified rules (quote-checked or mechanically checked)
+ * get a green ✓ badge; quote-verified badges expand to show their verbatim
+ * evidence. Prompt-enforced rules get a visibly weaker ◌ treatment — no
+ * checkmark the code can't back up.
  */
 
-type RuleRow = {
+type Badge = {
   rule: number;
-  detail: (compliment: DisplayCompliment) => string;
+  label: string;
+  tier: "quoted" | "verified" | "prompt";
   quoted?: keyof RulesSatisfied;
+  detail?: (compliment: DisplayCompliment) => string;
 };
 
-const RULE_ROWS: RuleRow[] = [
-  { rule: 1, detail: () => "prompt-enforced" },
-  { rule: 2, detail: () => "", quoted: "job_reference" },
-  { rule: 3, detail: () => "", quoted: "absurd_metaphor" },
-  { rule: 4, detail: () => "", quoted: "fake_statistic" },
+const BADGES: Badge[] = [
+  { rule: 2, label: "Job-Specific", tier: "quoted", quoted: "job_reference" },
+  {
+    rule: 3,
+    label: "Absurd Metaphor",
+    tier: "quoted",
+    quoted: "absurd_metaphor",
+  },
+  {
+    rule: 4,
+    label: "Fake Statistic",
+    tier: "quoted",
+    quoted: "fake_statistic",
+  },
   {
     rule: 5,
+    label: `Under ${MAX_WORDS} Words`,
+    tier: "verified",
     detail: (c) => `${countWords(c.text)}/${MAX_WORDS} words — verified`,
   },
-  { rule: 6, detail: () => "no banned words — verified" },
-  { rule: 7, detail: () => "prompt-enforced" },
-  { rule: 8, detail: () => "prompt-enforced" },
+  {
+    rule: 6,
+    label: 'No "Literally"',
+    tier: "verified",
+    detail: () => "no banned words — verified",
+  },
+  { rule: 1, label: "Appearance-Free", tier: "prompt" },
+  { rule: 7, label: "No Celebrity Comps", tier: "prompt" },
+  { rule: 8, label: "Workplace Safe", tier: "prompt" },
 ];
 
+const PROMPT_TITLE = "Requested in the prompt — not machine-verified";
+
 export function RuleChecklist({ compliment }: { compliment: DisplayCompliment }) {
-  const [open, setOpen] = useState(false);
+  const [openRule, setOpenRule] = useState<number | null>(null);
+  const open = BADGES.find((badge) => badge.rule === openRule);
 
   return (
-    <div className="border-t border-paper-line pt-3">
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        className="flex items-center gap-2 text-xs uppercase tracking-widest text-ok hover:text-ink-on-paper transition-colors"
-      >
-        <span aria-hidden>✓</span>
-        Brand compliant
-        <span className="text-faded normal-case tracking-normal">
-          {open ? "hide rules" : "show rules"}
-        </span>
-      </button>
+    <div className="border-t border-line pt-3">
+      <div className="flex flex-wrap gap-1.5">
+        {BADGES.map((badge) =>
+          badge.tier === "prompt" ? (
+            <span
+              key={badge.rule}
+              title={`${BRAND_RULES[badge.rule - 1]} — ${PROMPT_TITLE}`}
+              className="text-[11px] font-semibold rounded-full px-2.5 py-1 ring-1 ring-line ring-dashed text-text-faint"
+            >
+              <span aria-hidden>◌</span> {badge.label}
+            </span>
+          ) : (
+            <button
+              key={badge.rule}
+              type="button"
+              onClick={() =>
+                setOpenRule((rule) => (rule === badge.rule ? null : badge.rule))
+              }
+              aria-expanded={openRule === badge.rule}
+              title={BRAND_RULES[badge.rule - 1]}
+              className={`text-[11px] font-semibold rounded-full px-2.5 py-1 bg-success/10 text-success ring-1 ring-success/25 hover:ring-success/50 active:scale-95 transition ${
+                openRule === badge.rule ? "ring-success/60" : ""
+              }`}
+            >
+              <span aria-hidden>✓</span> {badge.label}
+            </button>
+          ),
+        )}
+      </div>
 
       {open && (
-        <ol className="mt-3 space-y-2 text-xs text-ink-on-paper">
-          {RULE_ROWS.map(({ rule, detail, quoted }) => (
-            <li key={rule} className="flex gap-2">
-              <span className="text-ok shrink-0" aria-hidden>
-                ✓
-              </span>
-              <span>
-                <span className="text-faded">
-                  {rule}. {BRAND_RULES[rule - 1]}
-                </span>{" "}
-                {quoted ? (
-                  <em className="font-display">
-                    “{compliment.rulesSatisfied[quoted]}”
-                  </em>
-                ) : (
-                  <span className="text-faded/80">— {detail(compliment)}</span>
-                )}
-              </span>
-            </li>
-          ))}
-        </ol>
+        <p className="mt-2 text-xs text-text-soft">
+          {open.quoted ? (
+            <>
+              Evidence:{" "}
+              <em className="font-display text-sm text-text-strong">
+                “{compliment.rulesSatisfied[open.quoted]}”
+              </em>
+            </>
+          ) : (
+            open.detail?.(compliment)
+          )}
+        </p>
       )}
+
+      <p className="mt-2 text-[10px] text-text-faint">
+        ✓ machine-verified · ◌ styled, not verified
+      </p>
     </div>
   );
 }
