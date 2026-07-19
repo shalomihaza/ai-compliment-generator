@@ -1,46 +1,54 @@
 import { z } from "zod";
+import { evidenceGuidelines } from "./guidelines";
 import type { RegisterInfo } from "./registers";
 
 /**
- * The rules_satisfied shape is defined exactly once, here, as a zod schema.
- * Evidence fields are VERBATIM QUOTES — a validator checks each quote appears
- * word-for-word in the compliment text, which catches hallucinated evidence.
+ * The rules_satisfied shape is built from the evidence guidelines, so adding,
+ * removing, or reworking an evidence rule in `lib/guidelines.ts` reshapes the
+ * schema (and its field descriptions) automatically. Each field is a VERBATIM
+ * quote the validator confirms appears in the compliment text, catching
+ * hallucinated evidence.
  */
-export const RulesSatisfiedSchema = z.object({
-  job_reference: z
-    .string()
-    .describe(
-      "A VERBATIM quote from the compliment text that references the person's specific job title or function. Copy it word-for-word — an automated check verifies the quote appears exactly in the text.",
-    ),
-  absurd_metaphor: z
-    .string()
-    .describe(
-      "A VERBATIM quote from the compliment text containing the wildly absurd metaphor or comparison. Copy it word-for-word — an automated check verifies the quote appears exactly in the text.",
-    ),
-  fake_statistic: z
-    .string()
-    .describe(
-      "A VERBATIM quote from the compliment text containing the made-up statistic. Copy it word-for-word — an automated check verifies the quote appears exactly in the text.",
-    ),
-});
+const rulesSatisfiedShape: Record<string, z.ZodString> = Object.fromEntries(
+  evidenceGuidelines.map(
+    (guideline) =>
+      [
+        guideline.enforcement.field,
+        z.string().describe(guideline.enforcement.schemaDescription),
+      ] as const,
+  ),
+);
 
-export const ComplimentSchema = z.object({
+export const RulesSatisfiedSchema = z.object(rulesSatisfiedShape);
+
+/** Keyed by evidence-guideline field id → the model's verbatim quote. */
+export type RulesSatisfied = Record<string, string>;
+
+export type ComplimentOutput = {
+  register: string;
+  text: string;
+  rules_satisfied: RulesSatisfied;
+};
+
+export type GenerateOutput = { compliments: ComplimentOutput[] };
+
+// Annotated as ZodType<…our hand-written types…> because the dynamically-built
+// rules_satisfied shape doesn't statically infer its keys; the runtime schema
+// is a normal ZodObject, so z.toJSONSchema and .parse behave as usual.
+export const ComplimentSchema: z.ZodType<ComplimentOutput> = z.object({
   register: z.string().describe("The id of the register this compliment uses."),
   text: z
     .string()
-    .describe("The compliment itself. Maximum 40 words, no exceptions."),
+    .describe("The compliment itself. Obey the maximum word count exactly."),
   rules_satisfied: RulesSatisfiedSchema,
 });
 
-export const GenerateOutputSchema = z.object({
+export const GenerateOutputSchema: z.ZodType<GenerateOutput> = z.object({
   compliments: z
     .array(ComplimentSchema)
     .length(3)
     .describe("Exactly 3 compliments, in the order the registers were listed."),
 });
-
-export type RulesSatisfied = z.infer<typeof RulesSatisfiedSchema>;
-export type ComplimentOutput = z.infer<typeof ComplimentSchema>;
 
 /** What a card actually renders: post-repair text + its evidence. */
 export type DisplayCompliment = {

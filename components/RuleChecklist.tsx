@@ -1,61 +1,80 @@
 "use client";
 
-import { BRAND_RULES } from "@/lib/prompts";
-import { countWords, MAX_WORDS } from "@/lib/validation";
-import type { DisplayCompliment, RulesSatisfied } from "@/lib/types";
+import { GUIDELINES, type Guideline } from "@/lib/guidelines";
+import { countWords } from "@/lib/validation";
+import type { DisplayCompliment } from "@/lib/types";
 
 /**
- * One consistent checklist of all 8 brand rules, each with a green ✓ (a
- * deliberate visual-consistency call). Quote-verified rules show their
- * verbatim proof inline; the verified/prompt-enforced distinction lives in
- * each row's tooltip.
+ * One consistent checklist of every brand rule, each with a green ✓ (a
+ * deliberate visual-consistency call). Every row is derived from
+ * `lib/guidelines.ts`: quote-verified rules show their verbatim proof inline,
+ * mechanical rules show the verified fact, and the verified/prompt-enforced
+ * distinction lives in each row's tooltip. Verified rows come first so the
+ * real machine checks lead.
  */
 
 const PROMPT_TITLE = "Requested in the prompt — not machine-verified";
 
-const RULES: {
-  rule: number;
-  label: string;
-  field?: keyof RulesSatisfied;
-  detail: (compliment: DisplayCompliment) => string;
-}[] = [
-  { rule: 2, label: "Job-Specific", field: "job_reference", detail: () => "quote verified in text" },
-  { rule: 3, label: "Absurd Metaphor", field: "absurd_metaphor", detail: () => "quote verified in text" },
-  { rule: 4, label: "Fake Statistic", field: "fake_statistic", detail: () => "quote verified in text" },
-  {
-    rule: 5,
-    label: `Under ${MAX_WORDS} Words`,
-    detail: (c) => `${countWords(c.text)}/${MAX_WORDS} words, verified`,
-  },
-  { rule: 6, label: 'No "Literally"', detail: () => "no banned words, verified" },
-  { rule: 1, label: "Appearance-Free", detail: () => PROMPT_TITLE },
-  { rule: 7, label: "No Celebrity Comps", detail: () => PROMPT_TITLE },
-  { rule: 8, label: "Workplace Safe", detail: () => PROMPT_TITLE },
-];
+/** Is this rule actually machine-verified (Tier 1/2) vs prompt-only (Tier 3)? */
+function isVerified(guideline: Guideline): boolean {
+  return guideline.enforcement.type !== "prompt_only";
+}
+
+/** The evidence quote for an evidence rule, else null. */
+function evidenceQuote(
+  guideline: Guideline,
+  compliment: DisplayCompliment,
+): string | null {
+  return guideline.enforcement.type === "evidence"
+    ? (compliment.rulesSatisfied[guideline.enforcement.field] ?? "")
+    : null;
+}
+
+/** The tooltip detail — the verified fact, or the prompt-only disclosure. */
+function detail(guideline: Guideline, compliment: DisplayCompliment): string {
+  switch (guideline.enforcement.type) {
+    case "evidence":
+      return "quote verified in text";
+    case "word_cap":
+      return `${countWords(compliment.text)}/${guideline.enforcement.limit} words, verified`;
+    case "banned_word":
+      return "no banned words, verified";
+    case "prompt_only":
+      return PROMPT_TITLE;
+  }
+}
+
+// Verified rules first, prompt-only last; stable within each group.
+const ORDERED = [...GUIDELINES].sort(
+  (a, b) => Number(isVerified(b)) - Number(isVerified(a)),
+);
 
 export function RuleChecklist({ compliment }: { compliment: DisplayCompliment }) {
   return (
     <ul className="border-t border-line pt-3 flex flex-col gap-1.5">
-      {RULES.map(({ rule, label, field, detail }) => (
-        <li
-          key={rule}
-          title={`${BRAND_RULES[rule - 1]} — ${detail(compliment)}`}
-          className="text-[11px] font-semibold text-text-soft"
-        >
-          <span className="text-success" aria-hidden>
-            ✓
-          </span>{" "}
-          {label}
-          {field && (
-            <>
-              {" "}
-              <em className="font-display font-normal text-sm text-text-strong">
-                “{compliment.rulesSatisfied[field]}”
-              </em>
-            </>
-          )}
-        </li>
-      ))}
+      {ORDERED.map((guideline) => {
+        const quote = evidenceQuote(guideline, compliment);
+        return (
+          <li
+            key={guideline.id}
+            title={`${guideline.text} — ${detail(guideline, compliment)}`}
+            className="text-[11px] font-semibold text-text-soft"
+          >
+            <span className="text-success" aria-hidden>
+              ✓
+            </span>{" "}
+            {guideline.label}
+            {quote !== null && (
+              <>
+                {" "}
+                <em className="font-display font-normal text-sm text-text-strong">
+                  “{quote}”
+                </em>
+              </>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }

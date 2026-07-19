@@ -1,20 +1,22 @@
 import { callStructuredWithRetry } from "./gemini";
 import { ComplimentSchema, type ComplimentOutput, type Message } from "./types";
-import { MAX_WORDS, validateCompliment, type Violation } from "./validation";
+import { validateCompliment, type Violation } from "./validation";
 
 /**
  * Surgical repair: one follow-up turn listing ONLY the violations, with exact
- * numbers. Never regenerate on violation — the repair preserves the joke.
+ * numbers. Never regenerate on violation — the repair preserves the joke. Every
+ * message is built from the violation's own parameters, so it stays accurate
+ * when the brand team retunes a guideline.
  */
 
 function describeViolation(violation: Violation): string {
   switch (violation.kind) {
-    case "word_count":
-      return `Your compliment is ${violation.count} words. The hard limit is ${MAX_WORDS}. Cut ${
-        violation.count - MAX_WORDS
+    case "word_cap":
+      return `Your compliment is ${violation.count} words. The hard limit is ${violation.limit}. Cut ${
+        violation.count - violation.limit
       } or more words by compressing phrasing — do not remove the metaphor, the statistic, or the job reference.`;
     case "banned_word":
-      return `Contains the banned word "literally". Remove or replace it without weakening the sentence.`;
+      return `Contains the banned word "${violation.word}". Remove or replace it without weakening the sentence.`;
     case "evidence_mismatch":
       return `Your "${violation.field}" evidence quote does not appear verbatim in the compliment text. Re-quote the exact phrase.`;
   }
