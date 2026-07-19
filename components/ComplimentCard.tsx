@@ -56,15 +56,12 @@ export function ComplimentCard({
         <DramaMeter level={card.level} />
       </header>
 
-      <button
-        type="button"
+      <p
         key={card.current.text}
-        onClick={copyCompliment}
-        title="Click to copy"
-        className="text-reveal text-left font-display text-xl/relaxed text-text-strong hover:opacity-80 transition-opacity cursor-copy"
+        className="text-reveal font-display text-xl/relaxed text-text-strong"
       >
         {card.current.text}
-      </button>
+      </p>
 
       <RuleChecklist compliment={card.current} />
 
@@ -76,7 +73,7 @@ export function ComplimentCard({
           className={`flex-1 text-sm font-bold px-4 py-3 rounded-xl transition ${
             retired
               ? "bg-surface-soft text-text-faint ring-1 ring-line cursor-not-allowed"
-              : "grad-primary text-white shadow-md shadow-violet/25 hover:shadow-lg hover:shadow-violet/30 active:scale-95 disabled:opacity-70"
+              : "grad-primary text-white shadow-md shadow-violet/25 cursor-pointer hover:shadow-lg hover:shadow-violet/30 active:scale-95 disabled:opacity-70"
           }`}
         >
           {escalating ? escalatingLine : escalateButtonLabel(card.level)}
@@ -84,7 +81,7 @@ export function ComplimentCard({
         <button
           type="button"
           onClick={copyCompliment}
-          className="ring-1 ring-line rounded-xl px-4 py-3 text-sm font-semibold text-text-soft hover:bg-surface-soft active:scale-95 transition min-w-20"
+          className="ring-1 ring-line rounded-xl px-4 py-3 text-sm font-semibold text-text-soft cursor-pointer hover:bg-surface-soft active:scale-95 transition min-w-20"
         >
           {copyState === "copied"
             ? "✓ Copied!"
