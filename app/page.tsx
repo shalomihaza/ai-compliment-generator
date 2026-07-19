@@ -14,7 +14,7 @@ export default function Home() {
 
       <div className="flex items-center justify-center pt-8 px-4">
         <span className="font-display text-lg tracking-tight text-text-strong">
-          LAUDATRON <span aria-hidden>✨</span>
+          COMPLIMATIC <span aria-hidden>✨</span>
         </span>
       </div>
 
@@ -37,7 +37,7 @@ export default function Home() {
       </header>
       <ComplimentApp />
       <footer className="text-center pb-8 px-4 text-xs text-text-faint">
-        Side effects may include unearned confidence. LAUDATRON accepts no
+        Side effects may include unearned confidence. COMPLIMATIC accepts no
         liability.
       </footer>
     </main>

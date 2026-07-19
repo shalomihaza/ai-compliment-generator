@@ -17,7 +17,7 @@ Requires `GEMINI_API_KEY` in `.env.local` (see `.env.example`; free key at aistu
 
 ## What this is
 
-LAUDATRON generates three over-the-top compliments in three distinct comedic *registers* from a job title / person details, each escalatable through 5 drama levels. The product thesis is **honest strictness**: every compliment must comply with 8 brand "Compliment Style Guidelines," and the UI only shows a checkmark for rules the code can actually verify.
+COMPLIMATIC generates three over-the-top compliments in three distinct comedic *registers* from a job title / person details, each escalatable through 5 drama levels. The product thesis is **honest strictness**: every compliment must comply with 8 brand "Compliment Style Guidelines," and the UI only shows a checkmark for rules the code can actually verify.
 
 ## Architecture
 

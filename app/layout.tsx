@@ -15,7 +15,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "LAUDATRON — The Internet's Most Dramatic Compliment Generator",
+  title: "COMPLIMATIC — The Internet's Most Dramatic Compliment Generator",
   description:
     "Enter a job title or a few details and receive three hilariously over-the-top compliments. Escalate the drama at your own risk.",
 };

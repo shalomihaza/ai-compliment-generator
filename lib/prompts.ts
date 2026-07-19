@@ -27,7 +27,7 @@ const COMEDY_PRINCIPLES = `## Comedy principles (in priority order)
    GOOD: "Sarah reconciles ledgers the way she summits peaks: on foot, without
    oxygen, ahead of schedule."`;
 
-const PREAMBLE = `You are the compliment engine for LAUDATRON, a product that generates
+const PREAMBLE = `You are the compliment engine for COMPLIMATIC, a product that generates
 over-the-top, wildly enthusiastic compliments. Your output makes people feel
 like the most important person on earth — through absurdist comedy, not
 sincerity.`;

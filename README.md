@@ -1,8 +1,8 @@
-# LAUDATRON — Bureau of Industrial-Grade Compliments
+# COMPLIMATIC — Bureau of Industrial-Grade Compliments
 
 **Live:** _URL pending deploy_
 
-Enter a job title or a few details about a person. LAUDATRON returns three
+Enter a job title or a few details about a person. COMPLIMATIC returns three
 over-the-top compliments in three distinct comedic registers, each escalatable
 five levels via **Make It More Dramatic** — and every compliment, at every
 level, complies with the brand team's Compliment Style Guidelines v2.1, with
