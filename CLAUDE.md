@@ -34,7 +34,7 @@ Next.js App Router + TypeScript + Tailwind. Two server routes call Gemini; all c
 **Validation — `lib/validation.ts` (three honest tiers):**
 - Tier 1 deterministic: rule 5 word count (`countWords`), rule 6 banned word `literally` (`hasBannedWord`), zod shape.
 - Tier 2 code-assisted: the model returns `rules_satisfied` as **verbatim quotes** (`RulesSatisfiedSchema` in `lib/types.ts`); a normalized substring check confirms each quote appears in the compliment, catching hallucinated evidence.
-- Tier 3 prompt-enforced only: rules 1/7/8 and the *quality* of 2/3/4 — deliberately **not** claimed as validated. UI note (deliberate product call, 2026-07): all rule badges render with a uniform green ✓ for visual consistency; the tier split survives in badge tooltips ("Requested in the prompt — not machine-verified" for Tier 3) and in the always-visible verbatim evidence rows for rules 2/3/4. Don't reintroduce a visual tier split, and don't remove the tooltip honesty either.
+- Tier 3 prompt-enforced only: rules 1/7/8 and the *quality* of 2/3/4 — deliberately **not** claimed as validated. UI note (deliberate product call, 2026-07): the card shows one uniform 8-row checklist, every row with a green ✓ for visual consistency; the tier split survives in row tooltips ("Requested in the prompt — not machine-verified" for Tier 3) and in the inline verbatim evidence quotes on rules 2/3/4. Don't reintroduce a visual tier split, and don't remove the tooltip honesty either.
 
 Word-count convention: split on whitespace, a token counts iff it contains a letter or digit (`/[\p{L}\p{N}]/u`). Banned word is `/\bliterally\b/iu` (the word, not the stem).
 
