@@ -1,9 +1,4 @@
-import {
-  ApiError as GenAiApiError,
-  FinishReason,
-  GoogleGenAI,
-  type Content,
-} from "@google/genai";
+import { ApiError as GenAiApiError, GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 import type { ApiError, Message } from "./types";
 
@@ -40,18 +35,24 @@ type StructuredCall<T> = {
   schema: z.ZodType<T>;
 };
 
-function toGeminiContents(messages: Message[]): Content[] {
+/**
+ * The card's thread becomes the interaction's `input`: an array of turns the
+ * client re-sends whole on every request. The app is deliberately stateless, so
+ * we opt out of server storage (`store: false`) rather than threading calls with
+ * `previous_interaction_id`.
+ */
+function toTurns(messages: Message[]) {
   return messages.map((message) => ({
     role: message.role === "assistant" ? "model" : "user",
-    parts: [{ text: message.content }],
+    content: message.content,
   }));
 }
 
 /**
- * One structured-output call: `responseJsonSchema` constrains the response to
- * our schema at the API level; zod re-parses server-side (Tier 1). Returns the
- * parsed value plus the raw response text (needed to build repair turns
- * in-thread).
+ * One structured-output Interactions call: `response_format` constrains the
+ * response to our schema at the API level; zod re-parses server-side (Tier 1).
+ * Returns the parsed value plus the raw response text (needed to build repair
+ * turns in-thread).
  */
 export async function callStructured<T>({
   system,
@@ -66,34 +67,42 @@ export async function callStructured<T>({
     );
   }
 
-  const response = await client.models
-    .generateContent({
+  const interaction = await client.interactions
+    .create({
       model: MODEL,
-      contents: toGeminiContents(messages),
-      config: {
-        systemInstruction: system,
-        maxOutputTokens: MAX_OUTPUT_TOKENS,
-        responseMimeType: "application/json",
-        responseJsonSchema: z.toJSONSchema(schema),
+      store: false,
+      system_instruction: system,
+      generation_config: { max_output_tokens: MAX_OUTPUT_TOKENS },
+      response_format: {
+        type: "text",
+        mime_type: "application/json",
+        schema: z.toJSONSchema(schema),
       },
+      input: toTurns(messages),
     })
     .catch((error: unknown) => {
       throw toProviderError(error);
     });
 
-  const finishReason = response.candidates?.[0]?.finishReason;
-  if (response.promptFeedback?.blockReason || finishReason === FinishReason.SAFETY || finishReason === FinishReason.PROHIBITED_CONTENT) {
-    throw new ProviderError(
-      "The Compliment Engine respectfully declined this request. Try different details.",
-    );
-  }
-  if (finishReason === FinishReason.MAX_TOKENS) {
+  // Interaction-level status is the finish signal (no per-candidate finishReason
+  // in the Interactions API). "incomplete" == truncated mid-response; any other
+  // non-"completed" status, or an error on the model_output step, is a decline
+  // (safety/prohibited content included).
+  if (interaction.status === "incomplete") {
     throw new ProviderError(
       "The Compliment Engine ran out of breath mid-sentence. Try again.",
     );
   }
+  const modelErrored = interaction.steps.some(
+    (step) => step.type === "model_output" && step.error,
+  );
+  if (interaction.status !== "completed" || modelErrored) {
+    throw new ProviderError(
+      "The Compliment Engine respectfully declined this request. Try different details.",
+    );
+  }
 
-  const rawText = response.text ?? "";
+  const rawText = interaction.output_text ?? "";
   let parsed: T;
   try {
     parsed = schema.parse(JSON.parse(rawText));

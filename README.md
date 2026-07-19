@@ -101,9 +101,13 @@ provider detail is logged server-side only. Nothing blanks the app.
 ## Stack
 
 Next.js (App Router) + TypeScript + Tailwind on Vercel. Gemini 3.5 Flash via
-the official `@google/genai` SDK with native structured outputs
-(`responseJsonSchema` + zod), so every response is schema-valid JSON — no
-scraping. The model is one line in `lib/gemini.ts`. (Model chosen after a
-cross-provider comparison on humor quality, constraint compliance, and
-latency; the provider module's narrow interface — one `callStructured`
-function — keeps a future swap to a one-file change.)
+the official `@google/genai` SDK's **Interactions API**
+(`client.interactions.create`) with native structured outputs (`response_format`
++ zod), so every response is schema-valid JSON — no scraping. Each card's thread
+is re-sent whole as the interaction `input`, with `store: false` — the app owns
+its conversation state, so it opts out of server-side retention rather than
+chaining calls with `previous_interaction_id`. The model is one line in
+`lib/gemini.ts`. (Model chosen after a cross-provider comparison on humor
+quality, constraint compliance, and latency; the provider module's narrow
+interface — one `callStructured` function — keeps a future swap to a one-file
+change.)
