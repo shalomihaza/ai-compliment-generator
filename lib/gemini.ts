@@ -36,15 +36,15 @@ type StructuredCall<T> = {
 };
 
 /**
- * The card's thread becomes the interaction's `input`: an array of turns the
- * client re-sends whole on every request. The app is deliberately stateless, so
- * we opt out of server storage (`store: false`) rather than threading calls with
- * `previous_interaction_id`.
+ * The card's thread becomes the interaction's `input`: the steps-based input
+ * format (`step_list`) the client re-sends whole on every request. The app is
+ * deliberately stateless, so we opt out of server storage (`store: false`)
+ * rather than threading calls with `previous_interaction_id`.
  */
-function toTurns(messages: Message[]) {
+function toSteps(messages: Message[]) {
   return messages.map((message) => ({
-    role: message.role === "assistant" ? "model" : "user",
-    content: message.content,
+    type: message.role === "assistant" ? ("model_output" as const) : ("user_input" as const),
+    content: [{ type: "text" as const, text: message.content }],
   }));
 }
 
@@ -78,7 +78,7 @@ export async function callStructured<T>({
         mime_type: "application/json",
         schema: z.toJSONSchema(schema),
       },
-      input: toTurns(messages),
+      input: toSteps(messages),
     })
     .catch((error: unknown) => {
       throw toProviderError(error);
