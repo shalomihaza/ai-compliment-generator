@@ -10,7 +10,6 @@ const MAX_LENGTH = 300;
 const PERSON_EXAMPLES = [
   "Sarah, accountant, loves hiking",
   "my coworker Dev, barista, latte-art perfectionist",
-  "Maya, nurse, never loses her cool",
   "Leo, product manager",
   "Ms. Rivera, teacher",
   "Sam, software engineer, refuses to write bugs",
